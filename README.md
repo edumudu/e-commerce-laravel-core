@@ -1,4 +1,4 @@
-#e-commerce laravel
+# e-commerce laravel
 
 O objetivo final desse projeto é ter uma loja virtual feita com o framework laravel, respeitando o code style descrito e usando testes
 
@@ -24,9 +24,9 @@ Estes code guides não foram feitos por mim, so estou os utilizando para organiz
 
 ### Code styles
 1. [**PHP**](#1-PHP)
-    1. [Class File](#1-class-file)
+    1. [Identation](#1-Identation)
 
-## PHP
+## 1. PHP
 ### 1. Identation
-- Deve ser feita a identação utilizando 2 espaçõs
+- Deve ser feita a identação utilizando 2 espaços
 - Final de linha deve ser configurado como LF
