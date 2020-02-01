@@ -29,4 +29,4 @@ Estes code guides não foram feitos por mim, so estou os utilizando para organiz
 ## 1. PHP
 ### 1. Identation
 - Deve ser feita a identação utilizando 2 espaços
-- Final de linha deve ser configurado como LF
+- Final de linha deve ser configurado como CRLF
