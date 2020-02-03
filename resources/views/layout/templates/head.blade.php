@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&display=swap" rel="stylesheet">
 
     <!--CSS-->
-
+    <link href="{{ asset('css/all.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/myBootcss.min.css') }}" rel="stylesheet">
   </head>
-  <body>
+  <body class="sticky-footer">

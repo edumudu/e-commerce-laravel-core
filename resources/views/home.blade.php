@@ -3,5 +3,8 @@
 @section('title', 'Home')
 
 @section('content')
-  <h1>teste</h1>
+  <div class="form-group">
+      <input class="form-field">
+      <label>ola</label>
+  </div>
 @endsection
