@@ -18,7 +18,7 @@ class CreateImgsTable extends Migration
             $table->string('path');
             $table->unsignedBigInteger('tipe_ref');
 
-            $table->foreign('tipe_ref')->references('id')->on('tb_tipes');
+            $table->foreign('tipe_ref')->references('id')->on('tb_tipes')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -22,9 +22,9 @@ class CreateProductsTable extends Migration
             $table->unsignedBigInteger('genre_ref');
             $table->unsignedBigInteger('img_ref')->nullable();
 
-            $table->foreign('tipe_ref')->references('id')->on('tb_tipes');
-            $table->foreign('genre_ref')->references('id')->on('tb_genres');
-            $table->foreign('img_ref')->references('id')->on('tb_imgs');
+            $table->foreign('tipe_ref')->references('id')->on('tb_tipes')->onDelete('cascade');
+            $table->foreign('genre_ref')->references('id')->on('tb_genres')->onDelete('cascade');
+            $table->foreign('img_ref')->references('id')->on('tb_imgs')->onDelete('cascade');
             $table->timestamps();
         });
     }
