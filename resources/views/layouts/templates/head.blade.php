@@ -18,6 +18,7 @@
 <link rel="dns-prefetch" href="//fonts.gstatic.com">
 
 <!--CSS-->
+<link href="{{ asset('css/all.min.css') }}" rel="stylesheet">
 <link href="{{ asset('css/myBootcss.min.css') }}" rel="stylesheet">
 <link href="{{ asset('css/helpers.css') }}" rel="stylesheet">
  

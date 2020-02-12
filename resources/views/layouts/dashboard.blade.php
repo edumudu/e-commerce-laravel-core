@@ -13,5 +13,8 @@
         <footer>
             @include('layouts.templates.dashboard.footer')
         </footer>
+
+        <!--scripts-->
+        @yield('scripts')
     </body>
 </html>

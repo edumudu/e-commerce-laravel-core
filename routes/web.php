@@ -18,7 +18,7 @@ Route::get('/sobre', ['as' => 'site.about', 'uses' => 'Site\AboutController@inde
 Route::get('/produtos', ['as' => 'site.products', 'uses' => 'Site\ProductController@index']);
 Route::get('/produtos/{id}', ['as' => 'site.products.single', 'uses' => 'Site\ProductController@single_prod']);
 
-Route::get('/cart', ['as' => 'site.cart', 'uses' => 'Site\CartController@execute']);
+Route::get('/cart', ['as' => 'site.cart', 'uses' => 'Site\CartController@index']);
 
 // Disponiveis para qulquer um logado
 Route::group(['middleware' => 'auth'], function(){

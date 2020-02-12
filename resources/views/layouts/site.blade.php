@@ -17,6 +17,7 @@
 
     <!--script-->
     <script src="{{ asset('js/myBoot.js') }}"></script>
+    @yield('scripts')
 
   </body>
 </html>

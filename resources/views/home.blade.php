@@ -2,17 +2,21 @@
 
 @section('title', 'Home')
 
+@section('scripts')
+<script src="{{ asset('js/slider.js') }}"></script>
+@endsection
+
 @section('content')
   <section class="slider">
 
-    <div class="sliders-wrapper">
+    <div class="sliders-wrapper flex">
       @foreach ($slides as $slide)
       <img class="responsive-img" src="{{ $slide->img }}" title="{{ $slide->name }}" alt="{{ $slide->name }}">
       @endforeach
     </div><!--sliders-wrapper-->
 
     <ol class="dots-wrapper flex">
-      @foreach (range(0, count($slides)) as $i)
+      @foreach (range(1, count($slides)) as $i)
       <li class="dot"></li>
       @endforeach
     </ol><!--dots-wrapper-->

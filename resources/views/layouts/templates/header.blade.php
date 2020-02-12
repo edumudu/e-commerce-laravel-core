@@ -9,26 +9,6 @@
             <li><a href="{{ route('site.contact') }}">Contato</a></li>
             <li><a href="{{ route('site.about') }}">Sobre</a></li>
             <li><a href="{{ route('site.products') }}">Produtos</a></li>
-            @guest
-              <li><a href="{{ route('login') }}">{{ __('Login') }}</a></li>
-              <li><a href="{{ route('register') }}">{{ __('Register') }}</a></li>
-            @else
-            <li class="dropdown">
-              <a class="dropdown-toggle" href="#">{{ Auth::user()->name }}</a>
-              <ul class="dropdown-menu left dark-text">
-                <li class="dropdown-item">
-                  <a class="dropdown-item" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();
-                    document.getElementById('logout-form').submit();">
-                    {{ __('Logout') }}
-                  </a>
-                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                  </form>
-                </li>
-              </ul>
-            </li>
-            @endguest
           </ul>
       </div>
     </div>
@@ -55,19 +35,29 @@
             <i class="fas fa-user-circle"></i>
           </a>
           <ul class="dropdown-menu left dark-text">
+            @guest
+              <li class="dropdown-item"><a href="{{ route('login') }}"><i class="fas fa-sign-in-alt"></i> {{ __('Login') }}</a></li>
+              <li class="dropdown-item"><a href="{{ route('register') }}"><i class="fas fa-user-plus"></i> {{ __('Register') }}</a></li>
+            @else
             <li class="dropdown-item">
-              <a href="login"><i class="fas fa-sign-in-alt"></i> Logar</a>
+              {{-- <a class="dropdown-toggle" href="#">{{ Auth::user()->name }}</a> --}}
+              <a href="{{ route('logout') }}"
+                onclick="event.preventDefault();
+                document.getElementById('logout-form').submit();">
+                {{ __('Logout') }}
+              </a>
+              <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+              </form>
             </li>
-            <li class="dropdown-item">
-              <a href="register"><i class="fas fa-user-plus"></i> Cadastrar-se</a>
-            </li>
+            @endguest
           </ul>
         </li>
-        <li><a class="dropdown-toggle">
+        <li><a class="dropdown-toggle" href="">
           <i class="far fa-heart"></i>
         </a></li>
         <li><a class="dropdown-toggle">
-          <a class="notification" href="  ">
+          <a class="notification" href="{{ route('site.cart') }}">
             <i class="fas fa-shopping-cart"></i>
             <span class="count-notification">2</span>
           </a>
