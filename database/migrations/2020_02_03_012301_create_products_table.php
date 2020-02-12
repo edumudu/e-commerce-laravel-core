@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->unsignedInteger('estoque')->default(1);
-            $table->unsignedDecimal('price', 4, 2)->default(0);
+            $table->unsignedDecimal('price', 6, 2)->default(0);
             $table->unsignedBigInteger('tipe_ref');
             $table->unsignedBigInteger('genre_ref');
             $table->unsignedBigInteger('img_ref')->nullable();
