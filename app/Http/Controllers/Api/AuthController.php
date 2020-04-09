@@ -24,6 +24,38 @@ class AuthController extends Controller
   }
 
   /**
+   * Log the user out (Invalidate the token).
+   *
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function logout()
+  {
+    auth('api')->logout();
+
+    return response()->json(['message' => 'Successfully logged out']);
+  }
+  
+  /**
+   * Get the authenticated User.
+   *
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function me()
+  {
+    return response()->json(auth('api')->user());
+  }
+
+  /**
+   * Refresh a token.
+   *
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function refresh()
+  {
+    return $this->respondWithToken(auth('api')->refresh());
+  }
+
+  /**
    * Get the token array structure.
    *
    * @param  string $token
@@ -35,7 +67,7 @@ class AuthController extends Controller
       return response()->json([
           'access_token' => $token,
           'token_type' => 'bearer',
-          'expires_in' => auth()->factory()->getTTL() * 60
+          'expires_in' => auth('api')->factory()->getTTL() * 60
       ]);
   }
 }

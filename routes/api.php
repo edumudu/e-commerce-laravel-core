@@ -13,4 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('login', 'Api\\AuthController@login');
+Route::post('auth/login', 'Api\\AuthController@login');
+
+Route::group(['middleware' => ['apiJwt']], function(){
+  Route::post('auth/logout', 'Api\\AuthController@logout');
+  Route::post('auth/refresh', 'Api\\AuthController@refresh');
+  Route::post('auth/me', 'Api\\AuthController@me');
+});
+
