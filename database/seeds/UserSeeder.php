@@ -18,15 +18,15 @@ class UserSeeder extends Seeder
         $dados = [
             'name'         => 'admin',
             'email'        => 'admin@gmail.com',
-            'password'     => bcrypt('123456789'),
+            'password'     => bcrypt('123'),
             'access_level' => 'admin'
         ];
 
         if(User::where('email', '=', $dados['email'])->count()) {
-            $user = User::where('email', '=', $dados['email'])->first();
-            $user->update($dados);
+          $user = User::where('email', '=', $dados['email'])->first();
+          $user->update($dados);
         } else {
-            DB::table('users')->insert($dados);
+          DB::table('users')->insert($dados);
         }
     }
 }

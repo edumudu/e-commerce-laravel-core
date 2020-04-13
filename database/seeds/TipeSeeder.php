@@ -5,21 +5,21 @@ use Illuminate\Database\Seeder;
 
 class TipeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
-    {
-        $tipes = [
-            "Blusa",
-            "Calça",
-            "Vestido"
-        ];
+  /**
+   * Run the database seeds.
+   *
+   * @return void
+   */
+  public function run()
+  {
+    $tipes = [
+      "blusa",
+      "calça",
+      "vestido"
+    ];
 
-        Tipe::create([
-            "tipe" => array_rand($tipes)
-        ]);
+    foreach ($tipes as $tipe) {
+      Tipe::create(["tipe" => $tipe]);
     }
+  }
 }
