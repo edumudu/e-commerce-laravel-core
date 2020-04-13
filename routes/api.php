@@ -19,5 +19,10 @@ Route::group(['middleware' => ['apiJwt']], function(){
   Route::post('auth/logout', 'Api\\AuthController@logout');
   Route::post('auth/refresh', 'Api\\AuthController@refresh');
   Route::post('auth/me', 'Api\\AuthController@me');
+
+  Route::apiResources([
+    'genre' => 'Api\\GenreController',
+    'tipe'  => 'Api\\TipeController'
+  ]);
 });
 
