@@ -18,13 +18,12 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->unsignedInteger('estoque')->default(1);
             $table->unsignedDecimal('price', 6, 2)->default(0);
+            $table->string('img_folder');
             $table->unsignedBigInteger('tipe_ref');
             $table->unsignedBigInteger('genre_ref');
-            $table->unsignedBigInteger('img_ref')->nullable();
 
             $table->foreign('tipe_ref')->references('id')->on('tb_tipes')->onDelete('cascade');
             $table->foreign('genre_ref')->references('id')->on('tb_genres')->onDelete('cascade');
-            $table->foreign('img_ref')->references('id')->on('tb_imgs')->onDelete('cascade');
             $table->timestamps();
         });
     }

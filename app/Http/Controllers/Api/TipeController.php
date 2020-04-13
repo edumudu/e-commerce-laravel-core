@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Tipe;
+use Exception;
 use Illuminate\Http\Request;
 
 class TipeController extends Controller
@@ -60,17 +61,16 @@ class TipeController extends Controller
      */
     public function update(Request $request, $tipeParam)
     {
-      $newTipe = $request->only(['tipe']);
-
       if(!$Tipe = Tipe::where('tipe', $tipeParam)->first())
         return response()->json(['error' => "Not found tipe called '$tipeParam'."], 404);
       
-      if (Tipe::where('tipe', $newTipe['tipe'])->first())
-        return response()->json(['error' => "Already existis tipe called '" . $newTipe['tipe'] ."'."], 409);
-      
-      $Tipe->update($newTipe);
+      try {
+        $Tipe->update($request->only(['tipe']));
 
-      return response()->json(['message' => "Successful updated tipe $Tipe->tipe.", 'genre' => $Tipe]);
+        return response()->json(['message' => "Successful updated tipe $Tipe->tipe.", 'tipe' => $Tipe]);
+      } catch (Exception $err) {
+        return response()->json(['error' => "Already existis tipe called '" . $request->tipe ."'."], 409);
+      }
     }
 
     /**

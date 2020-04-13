@@ -62,21 +62,24 @@ class GenreController extends Controller
      */
     public function update(Request $request, $genreUri)
     {
-      $newGenre = (object)$request->only('genre');
-
       if(!$genre = Genre::where('genre', $genreUri)->first())
         return response()->json(['error' => "Genre $genreUri not exists."] , 404);
-      
-      if (Genre::where('genre', $newGenre['genre'])->first()) {
-        return response()->json(['error' => 'Already existis an genre called ' . $newGenre['genre']], 409);
-      }
 
       try {
-        $genre->update($newGenre);
+        $genre->update($request->only('genre'));
       
         return response()->json(['message' => "Successful updated genre $genre->genre.", 'genre' => $genre]);
       } catch (Exception $err) {
-        return response()->json(['error' => "Not accept '$request->genre' as valid genre."], 400);
+        switch ($err->errorInfo[1]){
+          case 1265: // Code for no valid genre
+            $error = "Not accept '$request->genre' as valid genre.";
+            break;
+          case 1062: // Code for duplicade value
+            $error = "Already existis an genre called '$request->genre'.";
+            break;
+        }
+
+        return response()->json(['error' => $error], 400);
       }
     }
 

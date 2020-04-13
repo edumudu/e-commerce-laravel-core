@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
             GenreSeeder::class,
             TipeSeeder::class,
             UserSeeder::class,
-            // ImgSeeder::class,
             // ProductSeeder::class,
         ]);
     }

@@ -15,7 +15,7 @@ class CreateTipesTable extends Migration
     {
         Schema::create('tb_tipes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tipe', 50);
+            $table->string('tipe', 50)->unique();
             $table->timestamps();
         });
     }

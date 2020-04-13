@@ -22,7 +22,8 @@ Route::group(['middleware' => ['apiJwt']], function(){
 
   Route::apiResources([
     'genre' => 'Api\\GenreController',
-    'tipe'  => 'Api\\TipeController'
+    'tipe'  => 'Api\\TipeController',
+    'product'  => 'Api\\ProductController',
   ]);
 });
 
