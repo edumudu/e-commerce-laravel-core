@@ -11,8 +11,6 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    public $timestamps = false;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -38,6 +36,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'created_at' => 'timestamp',
     ];
 
     public function getJWTIdentifier()
