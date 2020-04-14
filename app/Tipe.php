@@ -9,4 +9,6 @@ class Tipe extends Model
   protected $table = 'tb_tipes';
 
   protected $fillable = ['tipe'];
+
+  public $timestamps = false;
 }

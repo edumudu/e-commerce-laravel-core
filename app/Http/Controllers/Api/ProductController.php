@@ -65,10 +65,14 @@ class ProductController extends Controller
    */
   public function update(Request $request, $id)
   {
-    $product = Product::find($id);
-    dd($request->only(['name', 'estoque', 'price', 'tipe_ref', 'genre_ref']));
-    $product->update($request->only(['name', 'estoque', 'price', 'tipe_ref', 'genre_ref']));
+    if (!$product = Product::find($id))
+      return response()->json(['error' => "Not found product with id '$id'"]);
 
+    $product->update($request->only(['name', 'estoque', 'price', 'tipe_ref', 'genre_ref']));
+    
+    $file = $request->file('thumb');
+    $file->storeAs($id, 'thumb.' . $file->extension(), 'upload');
+    
     return response()->json($product);
   }
 
