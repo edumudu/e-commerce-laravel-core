@@ -2,11 +2,13 @@
 
 O objetivo final desse projeto é ter uma loja virtual feita com o framework laravel, respeitando o code style descrito e usando testes
 
+## Parts of system
+- [Web Front end](https://github.com/edumudu/e-commerce-laravel)
+
 ## Objetivos
 
 - Desenvolver utilizando Git Flow
-- Consolidar conhecimentos do git
-- Consolidar conhecimentos em PHP
+- Consolidar conhecimentos em PHP/Laravel
 - Impletar API's
 - Utilizar lib PHPUnit para realizar testes
 
