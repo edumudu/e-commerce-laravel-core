@@ -11,4 +11,4 @@
 |
 */
 
-Route::get('/', ['as' => 'site.home', 'uses' => 'Site\HomeController@execute']);
+// EOF
