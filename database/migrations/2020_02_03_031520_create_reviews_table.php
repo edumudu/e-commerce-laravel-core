@@ -19,7 +19,6 @@ class CreateReviewsTable extends Migration
             $table->unsignedBigInteger('user_ref');
             $table->text('review');
             $table->unsignedDecimal('rating', 3, 2);
-            $table->date('writed_at');
 
             $table->foreign('prod_ref')->references('id')->on('tb_products')->onDelete('cascade');
             $table->foreign('user_ref')->references('id')->on('users')->onDelete('cascade');
