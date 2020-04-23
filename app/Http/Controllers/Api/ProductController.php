@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Product;
+use App\ViewProduct;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -17,7 +19,15 @@ class ProductController extends Controller
    */
   public function index()
   {
-    return response()->json(Product::all()); 
+    $products = ViewProduct::all();
+
+    foreach ($products as $product) {
+      $product->imgs = collect(Storage::files('./public/upload/' . $product->id))->map(function($file) {
+        return url(Storage::url($file));
+      });
+    }
+
+    return response()->json($products); 
   }
 
   /**
@@ -31,8 +41,9 @@ class ProductController extends Controller
     $file = $request->file('thumb');
 
     $product = new Product;
-    $product->fill($request->only(['name', 'estoque', 'price', 'tipe_ref', 'genre_ref']));
+    $product->fill($request->only(['name', 'inventory', 'price', 'tipe_ref', 'genre_ref']));
     $product->img_folder = Storage::disk('upload')->url('');
+    $product->posted_by = auth('api')->user()->id;
     $product->save();
 
     $product->update(['img_folder' => $product->img_folder . $product->id]);
@@ -50,8 +61,12 @@ class ProductController extends Controller
    */
   public function show($id)
   {
-    if (!$product = Product::find($id))
+    if (!$product = ViewProduct::find($id))
       return response()->json(['error' => "Not found product with id $id."], 404);
+
+    $product->imgs = collect(Storage::files('./public/upload/' . $product->id))->map(function($file) {
+      return url(Storage::url($file));
+    });
     
     return response()->json($product);
   }
@@ -68,7 +83,7 @@ class ProductController extends Controller
     if (!$product = Product::find($id))
       return response()->json(['error' => "Not found product with id '$id'"]);
 
-    $product->update($request->only(['name', 'estoque', 'price', 'tipe_ref', 'genre_ref']));
+    $product->update($request->only(['name', 'inventory', 'price', 'tipe_ref', 'genre_ref']));
     
     $file = $request->file('thumb');
     $file->storeAs($id, 'thumb.' . $file->extension(), 'upload');
