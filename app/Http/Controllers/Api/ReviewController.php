@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Product;
 use App\Review;
 use App\User;
 use Illuminate\Http\Request;
@@ -14,9 +15,14 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      return response()->json(Review::all());
+      return response()->json(
+        Review::join('users', 'users.id', '=', 'tb_reviews.user_ref')
+          ->where('prod_ref', $request->query('prod_id'))
+          ->select('users.name as user', 'tb_reviews.id', 'tb_reviews.review', 'tb_reviews.rating', 'tb_reviews.created_at')
+          ->get()
+      );
     }
 
     /**
@@ -30,12 +36,11 @@ class ReviewController extends Controller
       if(!User::find($request->user_ref))
         return response()->json(['error' => 'Not found user'], 400);
 
-      if(!User::find($request->prod_ref))
+      if(!Product::find($request->prod_ref))
         return response()->json(['error' => 'Not found product'], 400);
 
       $review = new Review;
       $review->fill($request->only(['prod_ref', 'user_ref', 'review', 'rating']));
-      $review->writed_at = date('Y-m-d');
       $review->save();
 
       return response()->json($review, 201);
@@ -49,7 +54,12 @@ class ReviewController extends Controller
      */
     public function show($id)
     {
-      if(!$review = Review::find($id))
+      $review = Review::join('users', 'users.id', '=', 'tb_reviews.user_ref')
+        ->where('tb_reviews.id', $id)
+        ->select('users.name as user', 'tb_reviews.id', 'tb_reviews.review', 'tb_reviews.rating', 'tb_reviews.created_at')
+        ->first();
+
+      if(!$review)
         return response()->json(['error' => "Not found review id '$id'"], 404);
       
       return response()->json($review);

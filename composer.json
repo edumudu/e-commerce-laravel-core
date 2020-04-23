@@ -49,7 +49,7 @@
     "prefer-stable": true,
     "scripts": {
         "refresh-db": [
-            "php artisan migrate:fresh",
+            "php artisan migrate:fresh --drop-views",
             "php artisan db:seed"
         ],
         "post-autoload-dump": [
