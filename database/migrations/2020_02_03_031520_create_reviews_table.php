@@ -13,15 +13,18 @@ class CreateReviewsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_reviews', function (Blueprint $table) {
+        Schema::create('reviews', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('prod_ref');
-            $table->unsignedBigInteger('user_ref');
+
             $table->text('review');
             $table->unsignedDecimal('rating', 3, 2);
 
-            $table->foreign('prod_ref')->references('id')->on('tb_products')->onDelete('cascade');
-            $table->foreign('user_ref')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('products_id');
+            $table->unsignedBigInteger('user_id');
+
+            $table->foreign('products_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            
             $table->timestamps();
         });
     }
@@ -33,6 +36,6 @@ class CreateReviewsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_reviews');
+        Schema::dropIfExists('reviews');
     }
 }

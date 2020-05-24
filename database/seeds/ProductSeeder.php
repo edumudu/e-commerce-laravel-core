@@ -11,6 +11,14 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Product::class, 20)->create();
+        $users = \App\User::all();
+        $genres = \App\Genre::all();
+
+        foreach($users as $user) {
+          $product = factory(\App\Product::class)->make();
+          $product->genre()->associate($genres[rand(0, $genres->count() - 1)]);
+
+          $user->products()->save($product);
+        }
     }
 }

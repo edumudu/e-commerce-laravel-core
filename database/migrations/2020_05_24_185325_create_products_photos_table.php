@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTipesTable extends Migration
+class CreateProductsPhotosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,15 @@ class CreateTipesTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_tipes', function (Blueprint $table) {
+        Schema::create('products_photos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tipe', 50)->unique();
+
+            $table->string('image')->unique();
+            
+            $table->unsignedBigInteger('product_id');
+
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
+
             $table->timestamps();
         });
     }
@@ -27,6 +33,6 @@ class CreateTipesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_tipes');
+        Schema::dropIfExists('products_photos');
     }
 }
