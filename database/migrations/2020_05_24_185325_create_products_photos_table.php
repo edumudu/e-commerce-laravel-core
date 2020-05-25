@@ -13,7 +13,7 @@ class CreateProductsPhotosTable extends Migration
      */
     public function up()
     {
-        Schema::create('products_photos', function (Blueprint $table) {
+        Schema::create('product_photos', function (Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->string('image')->unique();

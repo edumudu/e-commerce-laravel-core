@@ -15,14 +15,9 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(User $user)
     {
-      return response()->json(
-        Review::join('users', 'users.id', '=', 'tb_reviews.user_ref')
-          ->where('prod_ref', $request->query('prod_id'))
-          ->select('users.name as user', 'tb_reviews.id', 'tb_reviews.review', 'tb_reviews.rating', 'tb_reviews.created_at')
-          ->get()
-      );
+      return response()->json($user->reviews()->paginate(15));
     }
 
     /**
@@ -33,15 +28,12 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-      if(!User::find($request->user_ref))
-        return response()->json(['error' => 'Not found user'], 400);
-
-      if(!Product::find($request->prod_ref))
+      if(!$product = Product::find($request->get('product')))
         return response()->json(['error' => 'Not found product'], 400);
 
-      $review = new Review;
-      $review->fill($request->only(['prod_ref', 'user_ref', 'review', 'rating']));
-      $review->save();
+      $review = new Review($request->all());
+      $review->user()->associate($request->user);
+      $product->reviews()->save($review);
 
       return response()->json($review, 201);
     }
@@ -52,16 +44,8 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Review $review)
     {
-      $review = Review::join('users', 'users.id', '=', 'tb_reviews.user_ref')
-        ->where('tb_reviews.id', $id)
-        ->select('users.name as user', 'tb_reviews.id', 'tb_reviews.review', 'tb_reviews.rating', 'tb_reviews.created_at')
-        ->first();
-
-      if(!$review)
-        return response()->json(['error' => "Not found review id '$id'"], 404);
-      
       return response()->json($review);
     }
 
@@ -72,17 +56,14 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Review $review)
     {
-      if(!$review = Review::find($id))
-        return response()->json(['error' => "Not found review id '$id'"], 404);
+      if(!$request->user->reviews->contains($review))
+        return response()->json(['error' => "User not have permission to edit this review."], 403);
 
-      if($review->user_ref !== auth('api')->user()->id)
-        return response()->json(['error' => "User not have permission to edit this review '$id'"], 403);
+      $review->update($request->only(['review', 'rating']));
 
-      $review->update($request->only(['prod_ref', 'user_ref', 'review', 'rating']));
-
-      return response()->json(['message' => "Successful updated review with id '$id'", 'review' => $review]);
+      return response()->json(['message' => "Successful updated review.", 'review' => $review]);
     }
 
     /**
@@ -91,16 +72,13 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, Review $review)
     {
-      if(!$review = Review::find($id))
-        return response()->json(['error' => "Not found review id '$id'"], 404);
-
-      if($review->user_ref !== auth('api')->user()->id)
-        return response()->json(['error' => "User not have permission to delete this review '$id'"], 403);
+      if(!$request->user->reviews->contains($review))
+        return response()->json(['error' => "User not have permission to delete this review."], 403);
       
       $review->delete();
 
-      return response()->json(['message' => "Successful deleted review with id '$id'"]);
+      return response()->json(['message' => "Successful deleted review."]);
     }
 }

@@ -24,7 +24,7 @@ Route::group(['middleware' => ['apiJwt']], function(){
   Route::get('auth/me', 'Api\\AuthController@me');
   
   Route::group(['middleware' => ['moderation']], function(){
-    Route::post('product/{id}', 'Api\\ProductController@update'); // To fix php bug in multipart/form-data in put method
+    Route::post('product/{product}', 'Api\\ProductController@update'); // To fix php bug in multipart/form-data in put method
     Route::apiResource('product', 'Api\\ProductController')->only(['store', 'destroy']);
   });
 
@@ -32,7 +32,7 @@ Route::group(['middleware' => ['apiJwt']], function(){
 
   Route::apiResources([
     'genre' => 'Api\\GenreController',
-    'tipe'  => 'Api\\TipeController',
+    'category'  => 'Api\\CategoryController',
   ]);
 });
 

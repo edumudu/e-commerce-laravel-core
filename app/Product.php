@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
   protected $fillable = ['name', 'inventory', 'price', 'slug'];
+  protected $hidden = ['user_id', 'genre_id'];
+
+  public function getRouteKeyName()
+  {
+    return 'slug';
+  }
 
   public function genre()
   {
