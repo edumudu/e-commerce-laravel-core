@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', "access_level"
     ];
 
     /**
@@ -52,5 +52,15 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function products()
+    {
+      return $this->hasMany(Product::class);
+    }
+
+    public function reviews()
+    {
+      return $this->hasMany(Review::class);
     }
 }

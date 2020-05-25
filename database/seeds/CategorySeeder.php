@@ -13,13 +13,13 @@ class CategorySeeder extends Seeder
     public function run()
     {
       $tipes = [
-        "blusa",
-        "calça",
-        "vestido"
+        "blusa" => "blusa",
+        "calça" => "calca",
+        "vestido" => 'vestido'
       ];
   
-      foreach ($tipes as $tipe) {
-        Category::create(["name" => $tipe]);
+      foreach ($tipes as $key => $tipe) {
+        Category::create(["name" => $tipe, 'slug' => $key]);
       }
 
       factory(Category::class, 20);
