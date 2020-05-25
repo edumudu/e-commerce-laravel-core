@@ -12,7 +12,7 @@ class GenreSeeder extends Seeder
    */
   public function run()
   {
-    Genre::create(["genre" => "feminine"]);
-    Genre::create(["genre" => "male"]);
+    Genre::create(["name" => "feminine"]);
+    Genre::create(["name" => "male"]);
   }
 }
