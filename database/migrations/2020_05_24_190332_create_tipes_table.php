@@ -30,6 +30,6 @@ class CreateTipesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tipes');
+        Schema::dropIfExists('categories');
     }
 }

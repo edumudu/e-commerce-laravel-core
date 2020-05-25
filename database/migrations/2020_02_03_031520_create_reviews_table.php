@@ -19,10 +19,10 @@ class CreateReviewsTable extends Migration
             $table->text('review');
             $table->unsignedDecimal('rating', 3, 2);
 
-            $table->unsignedBigInteger('products_id');
+            $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('user_id');
 
-            $table->foreign('products_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             
             $table->timestamps();
