@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\GenreRequest;
 use App\Genre;
 use Exception;
 
@@ -25,7 +26,7 @@ class GenreController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(GenreRequest $request)
     {
       $genre = new Genre;
       $genre->name = $request->get('name');
@@ -57,7 +58,7 @@ class GenreController extends Controller
      * @param  string  $genreUri
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Genre $genre)
+    public function update(GenreRequest $request, Genre $genre)
     {
       try {
         $genre->name = $request->get('name');
