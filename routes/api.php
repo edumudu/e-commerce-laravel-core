@@ -16,11 +16,18 @@ use Illuminate\Http\Request;
 Route::namespace('Api')->group(function(){
 
   Route::post('auth/login', 'AuthController@login');
+  Route::post('auth/register', 'AuthController@register');
+
+  Route::post('/contact', 'UserContactController@contact');
 
   Route::apiResource('product', 'ProductController')->only(['index', 'show']);
   Route::apiResource('review', 'ReviewController')->only(['index', 'show']);
   Route::apiResource('genre', 'GenreController')->only(['index', 'show']);
   Route::apiResource('category', 'CategoryController')->only(['index', 'show']);
+
+  Route::prefix('cart')->name('cart.')->group(function(){
+    Route::post('/info', 'CartController@info')->name('info');
+  });
 
   Route::group(['middleware' => ['apiJwt']], function(){
 

@@ -15,9 +15,11 @@ class GenreController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      return response()->json(Genre::paginate(15));
+      $perPage = $request->query('per_page', 15);
+
+      return response()->json(Genre::paginate($perPage));
     }
 
     /**
@@ -43,7 +45,7 @@ class GenreController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  string  $genreUri
+     * @param  string  $genre
      * @return \Illuminate\Http\Response
      */
     public function show(Genre $genre)
@@ -55,7 +57,7 @@ class GenreController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  string  $genreUri
+     * @param  string  $genre
      * @return \Illuminate\Http\Response
      */
     public function update(GenreRequest $request, Genre $genre)

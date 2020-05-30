@@ -17,9 +17,15 @@ class ProductController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  public function index()
+  public function index(Request $request)
   {
-    $products = Product::paginate(15);
+    $perPage = $request->query('per_page', 15);
+    $products = Product::with('photos:product_id,image')->paginate($perPage);
+
+    $products->getCollection()->transform(function($product) {
+      $product->photos->transform(fn($photo) => Storage::disk('upload')->url($photo->image));
+      return $product;
+    });
 
     return response()->json($products); 
   }
@@ -56,8 +62,13 @@ class ProductController extends Controller
    * @return \Illuminate\Http\Response
    */
   public function show(Product $product)
-  {    
-    $product->load(['reviews', 'photos', 'categories', 'user', 'genre']);
+  { 
+    $product->load(['reviews.user', 'photos:product_id,image', 'categories', 'user', 'genre']);
+    $product->photos->transform(function($photo){
+      $photo->image = Storage::disk('upload')->url($photo->image);
+      return $photo;
+    });
+    $product->rating = (float)number_format($product->reviews->avg('rating'), 2, '.', '');
 
     return response()->json($product);
   }
