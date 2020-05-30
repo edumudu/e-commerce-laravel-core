@@ -2,12 +2,23 @@
 
 namespace App;
 
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-  protected $fillable = ['name', 'inventory', 'price', 'slug'];
+  use HasSlug;
+
+  protected $fillable = ['name', 'inventory', 'price'];
   protected $hidden = ['user_id', 'genre_id'];
+
+  public function getSlugOptions() : SlugOptions
+  {
+      return SlugOptions::create()
+          ->generateSlugsFrom('name')
+          ->saveSlugsTo('slug');
+  }
 
   public function getRouteKeyName()
   {

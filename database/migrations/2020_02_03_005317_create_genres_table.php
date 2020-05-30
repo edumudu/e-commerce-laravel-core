@@ -16,7 +16,8 @@ class CreateGenresTable extends Migration
         Schema::create('genres', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->enum('name', ['feminine', 'male'])->default('feminine')->unique();
+            $table->string('name')->default('feminine')->unique();
+            $table->string('slug')->unique();
 
             $table->timestamps();
         });
