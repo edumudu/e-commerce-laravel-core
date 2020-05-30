@@ -24,8 +24,17 @@ class CreateProductsTable extends Migration
             $table->unsignedBigInteger('genre_id');
             $table->unsignedBigInteger('user_id');
 
-            $table->foreign('genre_id')->references('id')->on('genres')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('genre_id')
+                  ->references('id')
+                  ->on('genres')
+                  ->onDelete('CASCADE')
+                  ->onUpdate('CASCADE');
+
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('CASCADE')
+                  ->onUpdate('CASCADE');
 
             $table->timestamps();
         });

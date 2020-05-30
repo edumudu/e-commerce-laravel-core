@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
 use App\Category;
 use Exception;
 use Illuminate\Http\Request;
@@ -14,9 +15,11 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      return response()->json(Category::paginate(15));
+      $perPage = $request->query('per_page', 15);
+
+      return response()->json(Category::paginate($perPage));
     }
 
     /**
@@ -25,7 +28,7 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
       $category = new Category($request->all());
 
@@ -34,7 +37,7 @@ class CategoryController extends Controller
       
       $category->save();
 
-      return response()->json(['message' => "Successful created tipe '$category->name'", 'tipe' => $category], 201);
+      return response()->json(['message' => "Successful created category '$category->name'", 'category' => $category], 201);
     }
 
     /**
@@ -57,14 +60,14 @@ class CategoryController extends Controller
      * @param  string  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryRequest $request, Category $category)
     { 
       try {
         $category->update($request->only(['name']));
 
-        return response()->json(['message' => "Successful updated tipe $category->name.", 'tipe' => $category]);
+        return response()->json(['message' => "Successful updated category $category->name.", 'category' => $category]);
       } catch (Exception $err) {
-        return response()->json(['error' => "Already existis tipe called '" . $request->category ."'."], 409);
+        return response()->json(['error' => "Already existis category called '" . $request->category ."'."], 409);
       }
     }
 
@@ -78,6 +81,6 @@ class CategoryController extends Controller
     {   
       $category->delete();
 
-      return response()->json(['message' => "Successful deleted tipe '$category->name'."]);
+      return response()->json(['message' => "Successful deleted category '$category->name'."]);
     }
 }

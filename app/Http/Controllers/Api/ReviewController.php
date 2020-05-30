@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReviewRequest;
 use App\Product;
 use App\Review;
 use App\User;
@@ -26,12 +27,11 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ReviewRequest $request)
     {
-      if(!$product = Product::find($request->get('product')))
-        return response()->json(['error' => 'Not found product'], 400);
+      $product = Product::find($request->get('product'));
 
-      $review = new Review($request->all());
+      $review = new Review($request->validated());
       $review->user()->associate($request->user);
       $product->reviews()->save($review);
 
@@ -56,12 +56,12 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Review $review)
+    public function update(ReviewRequest $request, Review $review)
     {
       if(!$request->user->reviews->contains($review))
         return response()->json(['error' => "User not have permission to edit this review."], 403);
 
-      $review->update($request->only(['review', 'rating']));
+      $review->update($request->validated());
 
       return response()->json(['message' => "Successful updated review.", 'review' => $review]);
     }

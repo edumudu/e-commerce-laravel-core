@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Genre;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProductRequest;
 use App\Product;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -16,9 +17,15 @@ class ProductController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  public function index()
+  public function index(Request $request)
   {
-    $products = Product::paginate(15);
+    $perPage = $request->query('per_page', 15);
+    $products = Product::with('photos:product_id,image')->paginate($perPage);
+
+    $products->getCollection()->transform(function($product) {
+      $product->photos->transform(fn($photo) => Storage::disk('upload')->url($photo->image));
+      return $product;
+    });
 
     return response()->json($products); 
   }
@@ -29,12 +36,12 @@ class ProductController extends Controller
    * @param  \Illuminate\Http\Request  $request
    * @return \Illuminate\Http\Response
    */
-  public function store(Request $request)
+  public function store(ProductRequest $request)
   {
     $user = auth('api')->user();
 
     $product = new Product;
-    $product->fill($request->only(['name', 'inventory', 'price', 'slug']));
+    $product->fill($request->validated());
     $product->genre()->associate(\App\Genre::find($request->get('genre')));
     $user->products()->save($product);
 
@@ -55,8 +62,13 @@ class ProductController extends Controller
    * @return \Illuminate\Http\Response
    */
   public function show(Product $product)
-  {    
-    $product->load(['reviews', 'photos', 'categories', 'user', 'genre']);
+  { 
+    $product->load(['reviews.user', 'photos:product_id,image', 'categories', 'user', 'genre']);
+    $product->photos->transform(function($photo){
+      $photo->image = Storage::disk('upload')->url($photo->image);
+      return $photo;
+    });
+    $product->rating = (float)number_format($product->reviews->avg('rating'), 2, '.', '');
 
     return response()->json($product);
   }
@@ -68,12 +80,12 @@ class ProductController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, Product $product)
+  public function update(ProductRequest $request, Product $product)
   {
     Storage::disk('upload')->deleteDirectory($product->slug);
     $product->photos()->delete();
 
-    $product->update($request->only(['name', 'inventory', 'price', 'slug']));
+    $product->update($request->validated());
     $product->genre()->associate(Genre::find($request->get('genre')))->save();
     $product->categories()->sync($request->get('categories'));
 
