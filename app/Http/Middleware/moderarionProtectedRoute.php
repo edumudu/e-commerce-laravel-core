@@ -19,7 +19,7 @@ class moderarionProtectedRoute
 
       if(!auth('api')->check())
         return response()->json(['status' => 'User must be logged.'], 401);
-      if(!in_array(auth('api')->user()->access_level, $accept_access))
+      if(!in_array($request->user->access_level, $accept_access))
         return response()->json(['status' => 'User access level must be mod or higger.'], 403);
 
       return $next($request);

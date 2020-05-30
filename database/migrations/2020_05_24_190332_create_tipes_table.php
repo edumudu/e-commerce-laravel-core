@@ -13,9 +13,12 @@ class CreateTipesTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_tipes', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tipe', 50)->unique();
+
+            $table->string('name')->unique();
+            $table->string('slug')->unique();
+
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class CreateTipesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_tipes');
+        Schema::dropIfExists('categories');
     }
 }

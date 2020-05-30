@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Genre;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProductRequest;
 use App\Product;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -15,9 +17,17 @@ class ProductController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  public function index()
+  public function index(Request $request)
   {
-    return response()->json(Product::all()); 
+    $perPage = $request->query('per_page', 15);
+    $products = Product::with('photos:product_id,image')->paginate($perPage);
+
+    $products->getCollection()->transform(function($product) {
+      $product->photos->transform(fn($photo) => Storage::disk('upload')->url($photo->image));
+      return $product;
+    });
+
+    return response()->json($products); 
   }
 
   /**
@@ -26,18 +36,21 @@ class ProductController extends Controller
    * @param  \Illuminate\Http\Request  $request
    * @return \Illuminate\Http\Response
    */
-  public function store(Request $request)
+  public function store(ProductRequest $request)
   {
-    $file = $request->file('thumb');
+    $user = auth('api')->user();
 
     $product = new Product;
-    $product->fill($request->only(['name', 'estoque', 'price', 'tipe_ref', 'genre_ref']));
-    $product->img_folder = Storage::disk('upload')->url('');
-    $product->save();
+    $product->fill($request->validated());
+    $product->genre()->associate(\App\Genre::find($request->get('genre')));
+    $user->products()->save($product);
 
-    $product->update(['img_folder' => $product->img_folder . $product->id]);
-    
-    $file->storeAs($product->id, 'thumb.' . $file->extension(), 'upload');
+    $product->categories()->sync($request->get('categories'));
+
+    foreach($request->file('photos') as $file){
+      $path = $file->storeAs($product->slug, time() . '.' . $file->extension(), 'upload');
+      $product->photos()->create(['image' => $path]);
+    }
     
     return response()->json($product, 201);
   }
@@ -48,11 +61,15 @@ class ProductController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function show($id)
-  {
-    if (!$product = Product::find($id))
-      return response()->json(['error' => "Not found product with id $id."], 404);
-    
+  public function show(Product $product)
+  { 
+    $product->load(['reviews.user', 'photos:product_id,image', 'categories', 'user', 'genre']);
+    $product->photos->transform(function($photo){
+      $photo->image = Storage::disk('upload')->url($photo->image);
+      return $photo;
+    });
+    $product->rating = (float)number_format($product->reviews->avg('rating'), 2, '.', '');
+
     return response()->json($product);
   }
 
@@ -63,15 +80,19 @@ class ProductController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, $id)
+  public function update(ProductRequest $request, Product $product)
   {
-    if (!$product = Product::find($id))
-      return response()->json(['error' => "Not found product with id '$id'"]);
+    Storage::disk('upload')->deleteDirectory($product->slug);
+    $product->photos()->delete();
 
-    $product->update($request->only(['name', 'estoque', 'price', 'tipe_ref', 'genre_ref']));
-    
-    $file = $request->file('thumb');
-    $file->storeAs($id, 'thumb.' . $file->extension(), 'upload');
+    $product->update($request->validated());
+    $product->genre()->associate(Genre::find($request->get('genre')))->save();
+    $product->categories()->sync($request->get('categories'));
+
+    foreach($request->file('photos') as $file){
+      $path = $file->storeAs($product->slug, time() . '.' . $file->extension(), 'upload');
+      $product->photos()->create(['image' => $path]);
+    }
     
     return response()->json($product);
   }
@@ -82,12 +103,9 @@ class ProductController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function destroy($id)
-  {
-    if (!$product = Product::find($id))
-      return response()->json(['error' => "Not found product with id '$id'."], 404);
-    
-    Storage::disk('upload')->deleteDirectory($id);
+  public function destroy(Product $product)
+  { 
+    $product->photos->each(fn($photo) => Storage::disk('upload')->deleteDirectory($photo->image));
     $product->delete();
 
     return response()->json(['message' => "Successful deleted '$product->name'."]);

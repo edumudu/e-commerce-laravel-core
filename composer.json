@@ -12,6 +12,7 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^2.0",
+        "spatie/laravel-sluggable": "2.3.0",
         "tymon/jwt-auth": "1.0.0-rc.5"
     },
     "require-dev": {
@@ -48,10 +49,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "refresh-db": [
-            "php artisan migrate:fresh",
-            "php artisan db:seed"
-        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

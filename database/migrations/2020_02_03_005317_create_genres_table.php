@@ -13,9 +13,12 @@ class CreateGenresTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_genres', function (Blueprint $table) {
+        Schema::create('genres', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->enum('genre', ['feminine', 'male'])->default('feminine')->unique();
+
+            $table->string('name')->default('feminine')->unique();
+            $table->string('slug')->unique();
+
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class CreateGenresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_genres');
+        Schema::dropIfExists('genres');
     }
 }

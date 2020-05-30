@@ -13,26 +13,39 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('auth/login', 'Api\\AuthController@login');
+Route::namespace('Api')->group(function(){
 
-Route::apiResource('product', 'Api\\ProductController')->only(['index', 'show']);
-Route::apiResource('review', 'Api\\ReviewController')->only(['index', 'show']);
+  Route::post('auth/login', 'AuthController@login');
+  Route::post('auth/register', 'AuthController@register');
 
-Route::group(['middleware' => ['apiJwt']], function(){
-  Route::post('auth/logout', 'Api\\AuthController@logout');
-  Route::post('auth/refresh', 'Api\\AuthController@refresh');
-  Route::post('auth/me', 'Api\\AuthController@me');
-  
-  Route::group(['middleware' => ['moderation']], function(){
-    Route::post('product/{id}', 'Api\\ProductController@update'); // To fix php bug in multipart/form-data in put method
-    Route::apiResource('product', 'Api\\ProductController')->only(['store', 'destroy']);
+  Route::post('/contact', 'UserContactController@contact');
+
+  Route::apiResource('product', 'ProductController')->only(['index', 'show']);
+  Route::apiResource('review', 'ReviewController')->only(['index', 'show']);
+  Route::apiResource('genre', 'GenreController')->only(['index', 'show']);
+  Route::apiResource('category', 'CategoryController')->only(['index', 'show']);
+
+  Route::prefix('cart')->name('cart.')->group(function(){
+    Route::post('/info', 'CartController@info')->name('info');
   });
 
-  Route::apiResource('review', 'Api\\ReviewController')->only(['store', 'update', 'destroy']);
+  Route::group(['middleware' => ['apiJwt']], function(){
 
-  Route::apiResources([
-    'genre' => 'Api\\GenreController',
-    'tipe'  => 'Api\\TipeController',
-  ]);
+    Route::prefix('auth')->group(function(){
+      Route::post('/logout', 'AuthController@logout');
+      Route::post('/refresh', 'AuthController@refresh');
+      Route::get('/me', 'AuthController@me');
+    });
+    
+    Route::group(['middleware' => ['moderation']], function(){
+      Route::post('product/{product}', 'ProductController@update')->name('product.update'); // To fix php bug in multipart/form-data in put method
+      Route::apiResource('product', 'ProductController')->only(['store', 'destroy']);
+    });
+
+    Route::apiResource('review', 'ReviewController')->only(['store', 'update', 'destroy']);
+
+    Route::apiResource('genre', 'GenreController')->except(['index', 'show']);
+    Route::apiResource('category', 'CategoryController')->except(['index', 'show']);
+  });
+
 });
-

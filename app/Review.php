@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-  protected $table = 'tb_reviews';
+  protected $fillable = ['rating', 'review'];
 
-  protected $fillable = ['prod_ref', 'user_ref', 'rating', 'review', 'writed_at'];
+  public function product()
+  {
+    return $this->belongsTo(Product::class);
+  }
+
+  public function user()
+  {
+    return $this->belongsTo(User::class);
+  }
 }

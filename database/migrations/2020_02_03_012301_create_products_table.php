@@ -13,17 +13,29 @@ class CreateProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tb_products', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('id');
+            
             $table->string('name');
-            $table->unsignedInteger('estoque')->default(1);
+            $table->unsignedInteger('inventory')->default(1);
             $table->unsignedDecimal('price', 6, 2)->default(0);
-            $table->string('img_folder');
-            $table->unsignedBigInteger('tipe_ref');
-            $table->unsignedBigInteger('genre_ref');
+            $table->string('slug')->unique();
 
-            $table->foreign('tipe_ref')->references('id')->on('tb_tipes')->onDelete('cascade');
-            $table->foreign('genre_ref')->references('id')->on('tb_genres')->onDelete('cascade');
+            $table->unsignedBigInteger('genre_id');
+            $table->unsignedBigInteger('user_id');
+
+            $table->foreign('genre_id')
+                  ->references('id')
+                  ->on('genres')
+                  ->onDelete('CASCADE')
+                  ->onUpdate('CASCADE');
+
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('CASCADE')
+                  ->onUpdate('CASCADE');
+
             $table->timestamps();
         });
     }
@@ -35,6 +47,6 @@ class CreateProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tb_products');
+        Schema::dropIfExists('products');
     }
 }

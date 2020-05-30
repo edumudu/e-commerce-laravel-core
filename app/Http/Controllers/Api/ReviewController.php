@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReviewRequest;
+use App\Product;
 use App\Review;
 use App\User;
 use Illuminate\Http\Request;
@@ -14,9 +16,9 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $user)
     {
-      return response()->json(Review::all());
+      return response()->json($user->reviews()->paginate(15));
     }
 
     /**
@@ -25,18 +27,13 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ReviewRequest $request)
     {
-      if(!User::find($request->user_ref))
-        return response()->json(['error' => 'Not found user'], 400);
+      $product = Product::find($request->get('product'));
 
-      if(!User::find($request->prod_ref))
-        return response()->json(['error' => 'Not found product'], 400);
-
-      $review = new Review;
-      $review->fill($request->only(['prod_ref', 'user_ref', 'review', 'rating']));
-      $review->writed_at = date('Y-m-d');
-      $review->save();
+      $review = new Review($request->validated());
+      $review->user()->associate($request->user);
+      $product->reviews()->save($review);
 
       return response()->json($review, 201);
     }
@@ -47,11 +44,8 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Review $review)
     {
-      if(!$review = Review::find($id))
-        return response()->json(['error' => "Not found review id '$id'"], 404);
-      
       return response()->json($review);
     }
 
@@ -62,17 +56,14 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ReviewRequest $request, Review $review)
     {
-      if(!$review = Review::find($id))
-        return response()->json(['error' => "Not found review id '$id'"], 404);
+      if(!$request->user->reviews->contains($review))
+        return response()->json(['error' => "User not have permission to edit this review."], 403);
 
-      if($review->user_ref !== auth('api')->user()->id)
-        return response()->json(['error' => "User not have permission to edit this review '$id'"], 403);
+      $review->update($request->validated());
 
-      $review->update($request->only(['prod_ref', 'user_ref', 'review', 'rating']));
-
-      return response()->json(['message' => "Successful updated review with id '$id'", 'review' => $review]);
+      return response()->json(['message' => "Successful updated review.", 'review' => $review]);
     }
 
     /**
@@ -81,16 +72,13 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, Review $review)
     {
-      if(!$review = Review::find($id))
-        return response()->json(['error' => "Not found review id '$id'"], 404);
-
-      if($review->user_ref !== auth('api')->user()->id)
-        return response()->json(['error' => "User not have permission to delete this review '$id'"], 403);
+      if(!$request->user->reviews->contains($review))
+        return response()->json(['error' => "User not have permission to delete this review."], 403);
       
       $review->delete();
 
-      return response()->json(['message' => "Successful deleted review with id '$id'"]);
+      return response()->json(['message' => "Successful deleted review."]);
     }
 }

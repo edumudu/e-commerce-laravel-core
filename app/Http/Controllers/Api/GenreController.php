@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\GenreRequest;
 use App\Genre;
 use Exception;
 
@@ -14,9 +15,11 @@ class GenreController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-      return response()->json(Genre::all());
+      $perPage = $request->query('per_page', 15);
+
+      return response()->json(Genre::paginate($perPage));
     }
 
     /**
@@ -25,31 +28,28 @@ class GenreController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(GenreRequest $request)
     {
-      $Genre = new Genre;
-      $Genre->genre = $request->genre;
+      $genre = new Genre;
+      $genre->name = $request->get('name');
 
-      if (Genre::where('genre', $Genre->genre)->first()) {
-        return response()->json(['error' => 'Already existis an genre called ' . $Genre->genre], 409);
+      if (Genre::where('name', $genre->name)->first()) {
+        return response()->json(['error' => 'Already existis an genre called ' . $genre->name], 409);
       }
 
-      $Genre->save();
+      $genre->save();
 
-      return response()->json(['message' => 'Successful created new Genre', 'genre' => $Genre]);
+      return response()->json(['message' => 'Successful created new Genre', 'genre' => $genre]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  string  $genreUri
+     * @param  string  $genre
      * @return \Illuminate\Http\Response
      */
-    public function show($genreUri)
+    public function show(Genre $genre)
     {
-      if(!$genre = Genre::where('genre', $genreUri)->first())
-        return response()->json(['error' => "Not found '$genreUri'"], 404);
-
       return response()->json($genre);
     }
 
@@ -57,25 +57,23 @@ class GenreController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  string  $genreUri
+     * @param  string  $genre
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $genreUri)
+    public function update(GenreRequest $request, Genre $genre)
     {
-      if(!$genre = Genre::where('genre', $genreUri)->first())
-        return response()->json(['error' => "Genre $genreUri not exists."] , 404);
-
       try {
-        $genre->update($request->only('genre'));
+        $genre->name = $request->get('name');
+        $genre->save();
       
-        return response()->json(['message' => "Successful updated genre $genre->genre.", 'genre' => $genre]);
+        return response()->json(['message' => 'Successful updated genre.', 'genre' => $genre]);
       } catch (Exception $err) {
         switch ($err->errorInfo[1]){
           case 1265: // Code for no valid genre
-            $error = "Not accept '$request->genre' as valid genre.";
+            $error = 'Not accept "' . $request->get('name') . '" as valid genre.';
             break;
           case 1062: // Code for duplicade value
-            $error = "Already existis an genre called '$request->genre'.";
+            $error = 'Already existis an genre called "' . $request->get('name') . '".';
             break;
         }
 
@@ -89,13 +87,10 @@ class GenreController extends Controller
      * @param  int  $genreUri
      * @return \Illuminate\Http\Response
      */
-    public function destroy($genreUri)
+    public function destroy(Genre $genre)
     {
-      if(!$genre = Genre::where('genre', $genreUri)->first())
-        return response()->json(['error' => "Not found genre '$genreUri'."]);
-
       $genre->delete();
         
-      return response()->json(['message' => 'Successful deleted genre ' . $genre->genre . '.']);
+      return response()->json(['message' => "Successful deleted genre $genre->name."]);
     }
 }

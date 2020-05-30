@@ -6,7 +6,7 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Database\Eloquent\Model;
 
-class Genre extends Model
+class Category extends Model
 {
   use HasSlug;
 
@@ -21,11 +21,11 @@ class Genre extends Model
 
   public function getRouteKeyName()
   {
-    return 'name';
+    return 'slug';
   }
 
   public function products()
   {
-    return $this->hasMany(Product::class);
+    return $this->belongsToMany(Product::class);
   }
 }
