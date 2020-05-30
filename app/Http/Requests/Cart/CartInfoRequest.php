@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Cart;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GenreRequest extends FormRequest
+class CartInfoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,8 @@ class GenreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255|unique:genres'
+          'cart'   => 'array',
+          'cart.*' => 'numeric|min:1'
         ];
     }
 }
