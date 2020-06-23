@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', "access_level"
+        'name', 'email', 'password', "role"
     ];
 
     /**
@@ -36,7 +36,7 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'created_at' => 'timestamp',
+        'created_at' => 'datetime',
     ];
 
     public function getJWTIdentifier()
@@ -62,5 +62,10 @@ class User extends Authenticatable implements JWTSubject
     public function reviews()
     {
       return $this->hasMany(Review::class);
+    }
+
+    public function orders()
+    {
+      return $this->hasMany(UserOrder::class);
     }
 }

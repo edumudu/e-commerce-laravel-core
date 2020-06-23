@@ -16,17 +16,17 @@ class UserSeeder extends Seeder
     public function run()
     {
         $dados_admin = [
-            'name'         => 'admin admin',
-            'email'        => 'admin@gmail.com',
-            'password'     => bcrypt('12345678'),
-            'access_level' => 'admin'
+            'name'     => 'admin admin',
+            'email'    => 'admin@gmail.com',
+            'password' => bcrypt('12345678'),
+            'role'     => 'admin'
         ];
 
         $dados_customer = [
-            'name'         => 'customer customer',
-            'email'        => 'customer@gmail.com',
-            'password'     => bcrypt('12345678'),
-            'access_level' => 'customer'
+            'name'     => 'customer customer',
+            'email'    => 'customer@gmail.com',
+            'password' => bcrypt('12345678'),
+            'role'     => 'customer'
         ];
 
         User::create($dados_admin);
