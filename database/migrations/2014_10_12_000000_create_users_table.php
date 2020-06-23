@@ -17,10 +17,13 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone');
+            $table->string('cpf');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->enum('access_level', ['admin', 'mod', 'customer'])->default('customer');
+            $table->enum('role', ['admin', 'mod', 'customer'])->default('customer');
+
             $table->timestamps();
         });
     }

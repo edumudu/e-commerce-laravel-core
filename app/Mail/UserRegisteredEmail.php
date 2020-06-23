@@ -29,6 +29,7 @@ class UserRegisteredEmail extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.user-registered');
+        $user = $this->user;
+        return $this->view('mail.user-registered', compact('user'));
     }
 }
