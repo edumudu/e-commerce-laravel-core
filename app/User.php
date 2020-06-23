@@ -68,4 +68,9 @@ class User extends Authenticatable implements JWTSubject
     {
       return $this->hasMany(UserOrder::class);
     }
+
+    public function cep()
+    {
+      return $this->belongsTo(Cep::class);
+    }
 }

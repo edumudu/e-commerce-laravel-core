@@ -12,19 +12,20 @@ class CheckoutController extends Controller
 {
     public function process(Request $request) {
       try {
-        $cart = $request->get('cart', []);
-        usort($cart, fn($a, $b) => $a['id'] - $b['id']);
+        $cart = collect($request->get('cart', []))->sortBy('id');
         
         $data = $request->only(['token', 'hash', 'installment', 'name']);
         $user = $request->user;
         $reference = Uuid::uuid4()->toString();
         
-        $cartItems = Product::whereIn('id', array_map(fn($cart) => $cart['id'], $cart))->get();
-        $cartitems = array_map(function($item, $cart) {
-          return array_merge($item, ['quantity' => $cart['quantity']]);
-        }, $cartItems->toArray(), $cart);
+        $cartItems = Product::whereIn('id', $cart->pluck('id'))
+          ->get()
+          ->transform(function($item, $key) use ($cart) {
+            $item['quantity'] = $cart[$key]['quantity'];
+            return $item;
+          });
 
-        $creditCardPayment = new CreditCard($cartitems, $user, $data, $reference);
+        $creditCardPayment = new CreditCard($cartItems->all(), $user, $data, $reference);
         $result = $creditCardPayment->doPayment();
 
         $userOrder = $user->orders()->create([

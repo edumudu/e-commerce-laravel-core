@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Cep;
 use App\Http\Controllers\Controller;
 use App\Mail\UserRegisteredEmail;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class AuthController extends Controller
     $credentials = $request->only(['email', 'password']);
 
     if (!$token = auth('api')->attempt($credentials)) {
-      return response()->json(['error' => 'Unauthorized'], 401);
+      return response()->json(['error' => ['message' => 'Unauthorized']], 401);
     }
 
     return $this->respondWithToken($token);
@@ -62,21 +63,23 @@ class AuthController extends Controller
 
   public function register(UserRegisterRequest $request)
   {
-    
-    $user = User::create(array_merge(
-      $request->validated(),
-      ['password' => Hash::make($request->validated()['password'])]
+    $validData = $request->validated();
+    $cep = Cep::firstOrCreate(['cep' => $validData['cep']]);
+
+    $user = $cep->users()->create(array_merge(
+      $validData,
+      ['password' => Hash::make($validData['password'])]
     ));
 
     if(!$user) {
-      return response()->json(['error' => 'Something is wrong, try again later'], 401);
+      return response()->json(['error' => ['message' => 'Something is wrong, try again later']], 401);
     }
 
     $this->registered($user);
     $credentials = $request->only(['email', 'password']);
     
     if (!$token = auth('api')->attempt($credentials)) {
-      return response()->json(['error' => 'Unauthorized'], 401);
+      return response()->json(['error' => ['message' => 'Unauthorized']], 401);
     }
 
     return $this->respondWithToken($token);
