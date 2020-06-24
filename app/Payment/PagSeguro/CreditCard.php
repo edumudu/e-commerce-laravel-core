@@ -2,6 +2,8 @@
 
 namespace App\Payment\PagSeguro;
 
+use App\Cep;
+
 class CreditCard 
 {
   private $items;
@@ -37,39 +39,42 @@ class CreditCard
     $creditCard->setSender()->setName($this->user->name);
     $creditCard->setSender()->setEmail(env('PAGSEGURO_ENV') === 'sandbox' ? 'c27502433980450200227@sandbox.pagseguro.com.br' : $this->user->email);
     $creditCard->setSender()->setPhone()->withParameters(
-      11,
-      56273440
+      ...explode(' ', preg_replace('/(\(|\)|-)/', '', $this->user->phone))
     );
     $creditCard->setSender()->setDocument()->withParameters(
         'CPF',
-        '69475308067'
+        $this->user->cpf
     );
     $creditCard->setSender()->setHash($this->cardInfo['hash']);
 
     $creditCard->setSender()->setIp('127.0.0.0');
 
-    // Set shipping information for this payment request
+    $shippingAddress = $this->user->address->address();
     $creditCard->setShipping()->setAddress()->withParameters(
-        'Av. Brig. Faria Lima',
-        '1384',
-        'Jardim Paulistano',
-        '01452002',
-        'São Paulo',
-        'SP',
+        $shippingAddress->logradouro,
+        $shippingAddress->number,
+        $shippingAddress->bairro,
+        str_replace('-', '', $shippingAddress->cep),
+        $shippingAddress->localidade,
+        $shippingAddress->uf,
         'BRA',
-        'apto. 114'
+        $shippingAddress->apto ? 'apto. ' . $shippingAddress->apto : null
     );
 
-    //Set billing information for credit card
+    $billingAddress = new Cep(['cep' => $this->cardInfo['cep']]);
+    $billingAddress = (object)array_merge((array)$billingAddress->address(), [
+      'number' => $this->cardInfo['number'],
+      'apto'   => $this->cardInfo['apto'] ? 'apto. ' . $this->cardInfo['apto'] : null
+    ]);
     $creditCard->setBilling()->setAddress()->withParameters(
-        'Av. Brig. Faria Lima',
-        '1384',
-        'Jardim Paulistano',
-        '01452002',
-        'São Paulo',
-        'SP',
+        $billingAddress->logradouro,
+        $billingAddress->number,
+        $billingAddress->bairro,
+        str_replace('-', '', $billingAddress->cep),
+        $billingAddress->localidade,
+        $billingAddress->uf,
         'BRA',
-        'apto. 114'
+        $billingAddress->apto
     );
 
     // Set credit card token
@@ -79,7 +84,7 @@ class CreditCard
     $creditCard->setInstallment()->withParameters($quantity, $installmentAmount);
 
     // Set the credit card holder information
-    $creditCard->setHolder()->setBirthdate('01/10/1979');
+    $creditCard->setHolder()->setBirthdate($this->cardInfo['birthdate']);
     $creditCard->setHolder()->setName($this->cardInfo['name']); // Equals in Credit Card
 
     $creditCard->setHolder()->setPhone()->withParameters(
@@ -89,7 +94,7 @@ class CreditCard
 
     $creditCard->setHolder()->setDocument()->withParameters(
         'CPF',
-        '69475308067'
+        $this->cardInfo['cpf']
     );
 
     $creditCard->setMode('DEFAULT');

@@ -5,16 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Payment\PagSeguro\CreditCard;
 use App\Product;
-use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
+use App\Http\Requests\Payment\PagSeguroDirectPayment;
 
 class CheckoutController extends Controller
 {
-    public function process(Request $request) {
+    public function process(PagSeguroDirectPayment $request) {
       try {
-        $cart = collect($request->get('cart', []))->sortBy('id');
-        
-        $data = $request->only(['token', 'hash', 'installment', 'name']);
+        $data = $request->validated();
+        $cart = collect($data['cart'])->sortBy('id');
         $user = $request->user;
         $reference = Uuid::uuid4()->toString();
         

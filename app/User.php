@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', "role"
+        'name', 'email', 'password', 'role', 'cpf', 'phone'
     ];
 
     /**
@@ -69,8 +69,8 @@ class User extends Authenticatable implements JWTSubject
       return $this->hasMany(UserOrder::class);
     }
 
-    public function cep()
+    public function address()
     {
-      return $this->belongsTo(Cep::class);
+      return $this->belongsTo(Address::class);
     }
 }

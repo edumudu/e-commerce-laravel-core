@@ -1,6 +1,6 @@
 <?php
 
-use App\Cep;
+use App\Address;
 use App\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
@@ -20,8 +20,8 @@ class UserSeeder extends Seeder
             'name'     => 'admin admin',
             'email'    => 'admin@gmail.com',
             'password' => bcrypt('12345678'),
+            'cpf'      => '02339024650',
             'role'     => 'admin',
-            'cep_id'   => 1,
             'phone'    => '31 991640226'
         ];
 
@@ -29,17 +29,17 @@ class UserSeeder extends Seeder
             'name'     => 'customer customer',
             'email'    => 'customer@gmail.com',
             'password' => bcrypt('12345678'),
+            'cpf'      => '45422230000',
             'role'     => 'customer',
-            'cep_id'   => 1,
             'phone'    => '31 991640226'
         ];
 
-        User::create($dados_admin);
-        User::create($dados_customer);
-        $ceps = Cep::all();
+        $addresses = Address::all();
+        $addresses->random()->users()->create($dados_admin);
+        $addresses->random()->users()->create($dados_customer);
 
-        factory(User::class, 20)->make()->each(function($user) use ($ceps) {
-          $ceps->random()->users()->save($user);
+        factory(User::class, 20)->make()->each(function($user) use ($addresses) {
+          $addresses->random()->users()->save($user);
         });
     }
 }

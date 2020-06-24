@@ -18,12 +18,16 @@ use Illuminate\Support\Str;
 */
 
 $factory->define(User::class, function (Faker $faker) {
+    $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
+    $faker->addProvider(new \Faker\Provider\pt_BR\PhoneNumber($faker));
+
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'phone' => $faker->tollFreePhoneNumber,
+        'phone' => $faker->phoneNumber,
+        'cpf' => $faker->cpf(false),
         'email_verified_at' => now(),
-        'password' => bcrypt('password'), // password
+        'password' => bcrypt('password'),
         'role' => 'customer',
         'remember_token' => Str::random(10),
     ];

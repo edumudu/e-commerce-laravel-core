@@ -65,8 +65,9 @@ class AuthController extends Controller
   {
     $validData = $request->validated();
     $cep = Cep::firstOrCreate(['cep' => $validData['cep']]);
+    $address = $cep->addresses()->firstOrCreate($request->only(['apto', 'number']));
 
-    $user = $cep->users()->create(array_merge(
+    $user = $address->users()->create(array_merge(
       $validData,
       ['password' => Hash::make($validData['password'])]
     ));

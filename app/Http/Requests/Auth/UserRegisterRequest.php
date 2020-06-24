@@ -27,6 +27,9 @@ class UserRegisterRequest extends FormRequest
             'name'     => 'required|string|max:255',
             'cep'      => 'required|string|max:255',
             'phone'    => 'required|string|max:255',
+            'cpf'      => 'required|string|max:255',
+            'apto'     => 'nullable|string|max:10',
+            'number'   => 'required|string|max:10',
             'email'    => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed'
         ];

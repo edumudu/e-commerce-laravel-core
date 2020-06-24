@@ -6,15 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cep extends Model
 {
+    private $address;
+
     protected $fillable = ['cep'];
 
-    public function address()
+    public function address() : object
     {
-      return json_decode(file_get_contents('https://viacep.com.br/ws/' . $this->cep . '/json/'));
+      $this->address = isset($this->address)
+        ? $this->address
+        : json_decode(file_get_contents('https://viacep.com.br/ws/' . $this->cep . '/json/'));
+
+      return $this->address;
     }
 
-    public function users()
+    public function addresses()
     {
-      return $this->hasMany(User::class);
+      return $this->hasMany(Address::class);
     }
 }

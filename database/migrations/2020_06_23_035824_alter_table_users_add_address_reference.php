@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterUsersTableAddCepReferences extends Migration
+class AlterTableUsersAddAddressReference extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class AlterUsersTableAddCepReferences extends Migration
     public function up()
     {
       Schema::table('users', function(Blueprint $table) {
-        $table->unsignedBigInteger('cep_id');
+        $table->unsignedBigInteger('address_id');
 
-        $table->foreign('cep_id')->references('id')->on('ceps');
+        $table->foreign('address_id')->references('id')->on('addresses')->onDelete('CASCADE')->onUpdate('CASCADE');
       });
     }
 
@@ -28,7 +28,7 @@ class AlterUsersTableAddCepReferences extends Migration
     public function down()
     {
       Schema::table('users', function(Blueprint $table) {
-        $table->dropForeign(['cep_id']);
+        $table->dropForeign(['address_id']);
         $table->dropColumn('cep_id');
       });
     }
