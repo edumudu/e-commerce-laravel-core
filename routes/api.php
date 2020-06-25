@@ -29,17 +29,30 @@ Route::namespace('Api')->group(function(){
     Route::post('/info', 'CartController@info')->name('info');
   });
 
-  Route::group(['middleware' => ['apiJwt']], function(){
+  Route::post('/checkout/notification', 'CheckoutController@notification');
+
+  Route::middleware('apiJwt')->group(function(){
 
     Route::prefix('auth')->group(function(){
       Route::post('/logout', 'AuthController@logout');
       Route::post('/refresh', 'AuthController@refresh');
       Route::get('/me', 'AuthController@me');
     });
+
+    Route::prefix('checkout')->group(function(){
+      Route::get('/sessionId', 'CheckoutController@makePagSeguroSession');
+      Route::post('/process', 'CheckoutController@process');
+    });
+
+    Route::prefix('order')->group(function() {
+      Route::get('/', 'UserOrderController@index');
+    });
     
-    Route::group(['middleware' => ['moderation']], function(){
-      Route::post('product/{product}', 'ProductController@update')->name('product.update'); // To fix php bug in multipart/form-data in put method
+    Route::middleware('moderation')->group(function(){
+      Route::post('/product/{product}', 'ProductController@update')->name('product.update'); // To fix php bug in multipart/form-data in put method
       Route::apiResource('product', 'ProductController')->only(['store', 'destroy']);
+      Route::apiResource('user', 'UserController')->only('index');
+      Route::get('/user/info', 'UserController@info');
     });
 
     Route::apiResource('review', 'ReviewController')->only(['store', 'update', 'destroy']);

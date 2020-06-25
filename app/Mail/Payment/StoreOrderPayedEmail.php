@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Payment;
 
+use App\UserOrder;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\User;
 
-class UserRegisteredEmail extends Mailable
+class StoreOrderPayedEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -17,9 +17,9 @@ class UserRegisteredEmail extends Mailable
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(UserOrder $order)
     {
-        $this->user = $user;
+        $this->order = $order;
     }
 
     /**
@@ -29,7 +29,8 @@ class UserRegisteredEmail extends Mailable
      */
     public function build()
     {
-        $user = $this->user;
-        return $this->view('mail.user-registered', compact('user'));
+        return $this->subject('Approved payment')
+                    ->view('mail.payment.store-payed')
+                    ->with($this->order->toArray());
     }
 }

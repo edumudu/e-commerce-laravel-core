@@ -19,8 +19,15 @@ class ProductController extends Controller
    */
   public function index(Request $request)
   {
+    $filters = $request->query;
     $perPage = $request->query('per_page', 15);
-    $products = Product::with('photos:product_id,image')->paginate($perPage);
+    $query = Product::query()->with('photos:product_id,image');
+
+    $query->when($filters->get('search'), function($q) use ($filters) {
+      return $q->where('name', 'like', '%' . $filters->get('search') . '%');
+    });
+
+    $products = $query->paginate($perPage);
 
     $products->getCollection()->transform(function($product) {
       $product->photos->transform(fn($photo) => Storage::disk('upload')->url($photo->image));
@@ -47,7 +54,7 @@ class ProductController extends Controller
 
     $product->categories()->sync($request->get('categories'));
 
-    foreach($request->file('photos') as $file){
+    foreach($request->file('photos', []) as $file){
       $path = $file->storeAs($product->slug, time() . '.' . $file->extension(), 'upload');
       $product->photos()->create(['image' => $path]);
     }
