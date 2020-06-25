@@ -41,6 +41,10 @@ Route::namespace('Api')->group(function(){
       Route::get('/sessionId', 'CheckoutController@makePagSeguroSession');
       Route::post('/process', 'CheckoutController@process');
     });
+
+    Route::prefix('order')->group(function() {
+      Route::get('/', 'UserOrderController@index');
+    });
     
     Route::middleware('moderation')->group(function(){
       Route::post('/product/{product}', 'ProductController@update')->name('product.update'); // To fix php bug in multipart/form-data in put method

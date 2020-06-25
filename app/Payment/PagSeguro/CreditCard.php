@@ -87,11 +87,6 @@ class CreditCard
     $creditCard->setHolder()->setBirthdate($this->cardInfo['birthdate']);
     $creditCard->setHolder()->setName($this->cardInfo['name']); // Equals in Credit Card
 
-    $creditCard->setHolder()->setPhone()->withParameters(
-        11,
-        56273440
-    );
-
     $creditCard->setHolder()->setDocument()->withParameters(
         'CPF',
         $this->cardInfo['cpf']
