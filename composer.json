@@ -12,6 +12,8 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^2.0",
+        "pagseguro/pagseguro-php-sdk": "^6.0",
+        "ramsey/uuid": "3.x",
         "spatie/laravel-sluggable": "2.3.0",
         "tymon/jwt-auth": "1.0.0-rc.5"
     },

@@ -16,7 +16,7 @@ class ProductSeeder extends Seeder
 
         foreach($users as $user) {
           $product = factory(\App\Product::class)->make();
-          $product->genre()->associate($genres[rand(0, $genres->count() - 1)]);
+          $product->genre()->associate($genres->random());
 
           $user->products()->save($product);
         }
