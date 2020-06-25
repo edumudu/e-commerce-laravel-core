@@ -1,6 +1,6 @@
 # e-commerce laravel
 
-O objetivo final desse projeto é ter uma loja virtual feita com o framework laravel, respeitando o code style descrito e usando testes
+O objetivo final desse projeto é ter uma RESTAPI para uma loja virtual. Feito com o framework laravel, respeitando o code style descrito e usando testes.
 
 ## Parts of system
 - [Web Front end](https://github.com/edumudu/e-commerce-laravel)
@@ -14,7 +14,6 @@ O objetivo final desse projeto é ter uma loja virtual feita com o framework lar
 
 
 ## libs
-- Mercado pago API
 - Pagseguro API
 - PHPUnit
 

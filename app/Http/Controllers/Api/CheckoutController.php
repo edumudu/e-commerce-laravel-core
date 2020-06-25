@@ -30,6 +30,12 @@ class CheckoutController extends Controller
             return $item;
           });
 
+        $data = array_merge($data, $data['sameAsRegister'] ? [
+          'apto' => $user->address->address()->apto,
+          'number' => $user->address->address()->number,
+          'cep' => $user->address->address()->cep
+        ] : []);
+
         $creditCardPayment = new CreditCard($cartItems->all(), $user, $data, $reference);
         $result = $creditCardPayment->doPayment();
 
