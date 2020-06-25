@@ -26,5 +26,7 @@ class AppServiceProvider extends ServiceProvider
       \PagSeguro\Library::initialize();
       \PagSeguro\Library::cmsVersion()->setName("CgAtacado")->setRelease("1.0.0");
       \PagSeguro\Library::moduleVersion()->setName("CgAtacado")->setRelease("1.0.0");
+
+      \App\UserOrder::observe(\App\Observers\UserOrderObserver::class);
     }
 }

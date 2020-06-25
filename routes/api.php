@@ -29,6 +29,8 @@ Route::namespace('Api')->group(function(){
     Route::post('/info', 'CartController@info')->name('info');
   });
 
+  Route::post('/checkout/notification', 'CheckoutController@notification');
+
   Route::middleware('apiJwt')->group(function(){
 
     Route::prefix('auth')->group(function(){

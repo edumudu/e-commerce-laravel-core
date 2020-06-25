@@ -7,6 +7,12 @@ use App\Payment\PagSeguro\CreditCard;
 use App\Product;
 use Ramsey\Uuid\Uuid;
 use App\Http\Requests\Payment\PagSeguroDirectPayment;
+use App\Mail\Payment\StoreOrderPayedEmail;
+use App\Mail\Payment\UserOrderPayedEmail;
+use App\Payment\PagSeguro\Notification;
+use App\UserOrder;
+use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -46,6 +52,32 @@ class CheckoutController extends Controller
         }
 
         return response()->json(env('APP_DEBUG') ? $message : 'Erro ao processar pedido', 401);
+      }
+    }
+
+    public function notification()
+    {
+      try {
+        $notification = new Notification();
+        $notification = $notification->getTransaction();
+
+        $userOrder = UserOrder::whereReference($notification->getReference())->first();
+        $userOrder->update([
+          'pagseguro_status' => $notification->getStatus()
+        ]);
+
+
+        if((int)$notification->getStatus() === 3) {
+          // Liberar pedido do usario
+          // Atualizar status para em sepracao
+          Mail::to($userOrder->user->email)->send(new UserOrderPayedEmail($userOrder));
+          Mail::to(env('MAIL_CONTACT_ADDRESS'))->send(new StoreOrderPayedEmail($userOrder));
+        }
+
+        return response()->json([], 204);
+      } catch (Exception $e) {
+        $message = env('APP_DEBUG') ? $e->getMessage() : '';
+        return response()->json(['error' => $message], 500);
       }
     }
 
