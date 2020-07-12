@@ -6,10 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\GenreRequest;
 use App\Genre;
+use App\Traits\InfoTrait;
 use Exception;
 
 class GenreController extends Controller
 {
+    use InfoTrait;
+
+    public function __construct(Genre $genre)
+    {
+      $this->model = $genre;
+    }
+
     /**
      * Display a listing of the resource.
      *

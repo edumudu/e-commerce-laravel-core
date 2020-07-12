@@ -1,18 +1,20 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\UserOrder;
 use Illuminate\Http\Request;
+use App\Traits\InfoTrait;
+use App\Traits\FilteredIndex;
 
 class UserOrderController extends Controller
 {
-  public function index(Request $request)
-  {
-    $perPage = $request->query('per_page', 15);
-    $orders = UserOrder::paginate($perPage);
+  use InfoTrait, FilteredIndex;
 
-    return response()->json($orders);
+  private $model;
+
+  public function __construct(UserOrder $userOrder) {
+    $this->model = $userOrder;
   }
 }

@@ -7,9 +7,17 @@ use App\Http\Requests\CategoryRequest;
 use App\Category;
 use Exception;
 use Illuminate\Http\Request;
+use App\Traits\InfoTrait;
 
 class CategoryController extends Controller
 {
+    use InfoTrait;
+
+    public function __construct(Category $category)
+    {
+      $this->model = $category;
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -30,5 +30,6 @@ $factory->define(User::class, function (Faker $faker) {
         'password' => bcrypt('password'),
         'role' => 'customer',
         'remember_token' => Str::random(10),
+        'created_at' => $faker->dateTimeBetween('-3 years', 'now')
     ];
 });
