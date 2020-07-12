@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ReviewRequest;
 use App\Product;
 use App\Review;
+use App\Traits\InfoTrait;
 use App\User;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    use InfoTrait;
+
     /**
      * Display a listing of the resource.
      *

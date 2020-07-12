@@ -57,7 +57,7 @@ class CheckoutController extends Controller
           $message  = ['error' => ['message' => $th->getMessage()]];
         }
 
-        return response()->json(env('APP_DEBUG') ? $message : 'Erro ao processar pedido', 401);
+        return response()->json(env('APP_DEBUG') ? $message : 'Erro ao processar pedido', 403);
       }
     }
 

@@ -27,7 +27,7 @@ class ProductController extends Controller
       return $q->where('name', 'like', '%' . $filters->get('search') . '%');
     });
 
-    $products = $query->paginate($perPage);
+    $products = $query->orderBy('created_at', 'DESC')->paginate($perPage);
 
     $products->getCollection()->transform(function($product) {
       $product->photos->transform(fn($photo) => Storage::disk('upload')->url($photo->image));
@@ -54,8 +54,8 @@ class ProductController extends Controller
 
     $product->categories()->sync($request->get('categories'));
 
-    foreach($request->file('photos', []) as $file){
-      $path = $file->storeAs($product->slug, time() . '.' . $file->extension(), 'upload');
+    foreach($request->file('photos', []) as $key => $file){
+      $path = $file->storeAs($product->slug, time() . '-' . $key . '.' . $file->extension(), 'upload');
       $product->photos()->create(['image' => $path]);
     }
     
@@ -96,7 +96,7 @@ class ProductController extends Controller
     $product->genre()->associate(Genre::find($request->get('genre')))->save();
     $product->categories()->sync($request->get('categories'));
 
-    foreach($request->file('photos') as $file){
+    foreach($request->file('photos', []) as $file){
       $path = $file->storeAs($product->slug, time() . '.' . $file->extension(), 'upload');
       $product->photos()->create(['image' => $path]);
     }
