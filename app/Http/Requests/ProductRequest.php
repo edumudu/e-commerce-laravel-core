@@ -3,9 +3,12 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Traits\FormRequestMessage;
 
 class ProductRequest extends FormRequest
 {
+    use FormRequestMessage;
+    
     /**
      * Determine if the user is authorized to make this request.
      *
