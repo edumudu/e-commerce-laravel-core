@@ -30,10 +30,8 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ReviewRequest $request)
+    public function store(ReviewRequest $request, Product $product)
     {
-      $product = Product::find($request->get('product'));
-
       $review = new Review($request->validated());
       $review->user()->associate($request->user);
       $product->reviews()->save($review);
@@ -59,8 +57,10 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ReviewRequest $request, Review $review)
+    public function update(ReviewRequest $request, Product $product, Review $review)
     {
+      $product->reviews()->findOrFail($review->id);
+
       if(!$request->user->reviews->contains($review))
         return response()->json(['error' => "User not have permission to edit this review."], 403);
 
@@ -75,8 +75,10 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Review $review)
+    public function destroy(Request $request, Product $product, Review $review)
     {
+      $product->reviews()->findOrFail($review->id);
+
       if(!$request->user->reviews->contains($review))
         return response()->json(['error' => "User not have permission to delete this review."], 403);
       

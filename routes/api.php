@@ -56,7 +56,7 @@ Route::namespace('Api')->group(function(){
       Route::get('/category/info', 'CategoryController@info');
     });
 
-    Route::apiResource('review', 'ReviewController')->only(['store', 'update', 'destroy']);
+    Route::apiResource('/{product}/review', 'ReviewController')->only(['store', 'update', 'destroy']);
     Route::apiResource('genre', 'GenreController')->except(['index', 'show']);
     Route::apiResource('category', 'CategoryController')->except(['index', 'show']);
   });
