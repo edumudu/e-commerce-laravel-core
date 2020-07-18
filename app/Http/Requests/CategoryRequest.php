@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Traits\FormRequestMessage;
+use Illuminate\Support\Facades\Gate;
 
 class CategoryRequest extends FormRequest
 {
@@ -16,7 +17,7 @@ class CategoryRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return Gate::allows('isAdmin', $this->user);
     }
 
     /**

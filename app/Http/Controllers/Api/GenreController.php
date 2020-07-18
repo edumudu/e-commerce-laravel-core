@@ -8,6 +8,7 @@ use App\Http\Requests\GenreRequest;
 use App\Genre;
 use App\Traits\InfoTrait;
 use Exception;
+use Illuminate\Support\Facades\Gate;
 
 class GenreController extends Controller
 {
@@ -40,10 +41,6 @@ class GenreController extends Controller
     {
       $genre = new Genre;
       $genre->name = $request->get('name');
-
-      if (Genre::where('name', $genre->name)->first()) {
-        return response()->json(['error' => 'Already existis an genre called ' . $genre->name], 409);
-      }
 
       $genre->save();
 
@@ -80,9 +77,6 @@ class GenreController extends Controller
           case 1265: // Code for no valid genre
             $error = 'Not accept "' . $request->get('name') . '" as valid genre.';
             break;
-          case 1062: // Code for duplicade value
-            $error = 'Already existis an genre called "' . $request->get('name') . '".';
-            break;
         }
 
         return response()->json(['error' => $error], 400);
@@ -95,8 +89,9 @@ class GenreController extends Controller
      * @param  int  $genreUri
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Genre $genre)
+    public function destroy(Request $request, Genre $genre)
     {
+      Gate::authorize('isAdmin', $request->user);
       $genre->delete();
         
       return response()->json(['message' => "Successful deleted genre $genre->name."]);

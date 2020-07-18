@@ -8,6 +8,7 @@ use App\Category;
 use Exception;
 use Illuminate\Http\Request;
 use App\Traits\InfoTrait;
+use Illuminate\Support\Facades\Gate;
 
 class CategoryController extends Controller
 {
@@ -38,11 +39,7 @@ class CategoryController extends Controller
      */
     public function store(CategoryRequest $request)
     {
-      $category = new Category($request->all());
-
-      if (Category::where('name', $category->name)->first())
-        return response()->json(['error' => "Already existis category called '$category->name'."], 409);
-      
+      $category = new Category($request->validated());
       $category->save();
 
       return response()->json(['message' => "Successful created category '$category->name'", 'category' => $category], 201);
@@ -70,13 +67,9 @@ class CategoryController extends Controller
      */
     public function update(CategoryRequest $request, Category $category)
     { 
-      try {
         $category->update($request->only(['name']));
 
         return response()->json(['message' => "Successful updated category $category->name.", 'category' => $category]);
-      } catch (Exception $err) {
-        return response()->json(['error' => "Already existis category called '" . $request->category ."'."], 409);
-      }
     }
 
     /**
@@ -85,8 +78,9 @@ class CategoryController extends Controller
      * @param  string  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
-    {   
+    public function destroy(Request $request, Category $category)
+    {
+      Gate::authorize('isAdmin', $request->user);
       $category->delete();
 
       return response()->json(['message' => "Successful deleted category '$category->name'."]);

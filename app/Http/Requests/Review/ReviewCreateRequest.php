@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Review;
 
+use App\Review;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Traits\FormRequestMessage;
 
@@ -16,7 +17,9 @@ class ReviewCreateRequest extends FormRequest
    */
   public function authorize()
   {
-    return true;
+    $product = $this->route('product');
+
+    return $this->user->can('create', [Review::class, $product]);
   }
 
   /**
@@ -27,7 +30,6 @@ class ReviewCreateRequest extends FormRequest
   public function rules()
   {
     return [
-      'product' => 'required|numeric|min:1|exists:products,id',
       'review'  => 'required|string',
       'rating'  => 'required|numeric|min:1|max:5'
     ];
