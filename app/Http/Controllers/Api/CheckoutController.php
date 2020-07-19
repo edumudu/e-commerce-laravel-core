@@ -27,6 +27,7 @@ class CheckoutController extends Controller
           ->get()
           ->transform(function($item, $key) use ($cart) {
             $item['quantity'] = $cart[$key]['quantity'];
+
             return $item;
           });
 
@@ -38,6 +39,10 @@ class CheckoutController extends Controller
 
         $creditCardPayment = new CreditCard($cartItems->all(), $user, $data, $reference);
         $result = $creditCardPayment->doPayment();
+
+        $cartItems->each(function($item) {
+          $item::update(['inventory', $item->inventory - $item->quantity]);
+        });
 
         $userOrder = $user->orders()->create([
           'reference'        => $reference,
@@ -87,15 +92,16 @@ class CheckoutController extends Controller
       }
     }
 
-    public function makePagSeguroSession() {
-      if(!session()->has('pagseguro_session_code')) {
+    public function makePagSeguroSession()
+    {
+      try {
         $sessionCode = \PagSeguro\Services\Session::create(
           \PagSeguro\Configuration\Configure::getAccountCredentials()
         );
-
-        session()->put('pagseguro_session_code', $sessionCode->getResult());
+          
+        return response()->json(['sessionId' => $sessionCode->getResult()]);
+      } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage()], $e->getCode());
       }
-      
-      return response()->json(['sessionId' => session()->get('pagseguro_session_code')]);
     }
 }
