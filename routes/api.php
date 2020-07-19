@@ -65,5 +65,10 @@ Route::namespace('Api')->group(function(){
   Route::apiResource('review', 'ReviewController')->only(['index', 'show']);
   Route::apiResource('genre', 'GenreController')->only(['index', 'show']);
   Route::apiResource('category', 'CategoryController')->only(['index', 'show']);
+});
 
+Route::fallback(function() {
+  return response()->json([
+    'message' => 'Page not found'
+  ], 404);
 });

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ReviewRequest;
+use App\Http\Requests\Review\ReviewCreateRequest;
+use App\Http\Requests\Review\ReviewEditingRequest;
 use App\Product;
 use App\Review;
 use App\Traits\InfoTrait;
 use App\User;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
@@ -30,7 +33,7 @@ class ReviewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ReviewRequest $request, Product $product)
+    public function store(ReviewCreateRequest $request, Product $product)
     {
       $review = new Review($request->validated());
       $review->user()->associate($request->user);
@@ -57,12 +60,11 @@ class ReviewController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ReviewRequest $request, Product $product, Review $review)
+    public function update(ReviewEditingRequest $request, Product $product, Review $review)
     {
-      $product->reviews()->findOrFail($review->id);
-
-      if(!$request->user->reviews->contains($review))
-        return response()->json(['error' => "User not have permission to edit this review."], 403);
+      if($review->product_id !== $product->id) {
+        throw new ModelNotFoundException;
+      }
 
       $review->update($request->validated());
 
@@ -77,11 +79,14 @@ class ReviewController extends Controller
      */
     public function destroy(Request $request, Product $product, Review $review)
     {
-      $product->reviews()->findOrFail($review->id);
+      if($review->product_id !== $product->id) {
+        throw new ModelNotFoundException;
+      }
 
-      if(!$request->user->reviews->contains($review))
-        return response()->json(['error' => "User not have permission to delete this review."], 403);
-      
+      if(!$request->user->can('delete', $review)) {
+        throw new AuthorizationException('This action is unauthorized.');
+      }
+
       $review->delete();
 
       return response()->json(['message' => "Successful deleted review."]);

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
 use App\Product;
 use Exception;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -45,7 +46,7 @@ class ProductController extends Controller
    */
   public function store(ProductRequest $request)
   {
-    $user = auth('api')->user();
+    $user = $request->user;
 
     $product = new Product;
     $product->fill($request->validated());
@@ -112,6 +113,7 @@ class ProductController extends Controller
    */
   public function destroy(Product $product)
   { 
+    Gate::authorize('isAdmin', $this->user);
     $product->photos->each(fn($photo) => Storage::disk('upload')->deleteDirectory($photo->image));
     $product->delete();
 

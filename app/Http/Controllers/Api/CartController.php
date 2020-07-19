@@ -18,6 +18,7 @@ class CartController extends Controller
 
         $products->transform(function($product){
           $product->photos->transform(fn($photo) => Storage::disk('upload')->url($photo->image));
+          
           return $product;
         });
 
